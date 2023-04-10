@@ -22,7 +22,7 @@ from collections import deque
 
 MODES = {
     "SP": 0, # spectator
-    "RC": 1,
+    "RC": 1, # recon
     "TW": 2,
     "SZ": 3,
     "TC": 4,
@@ -65,7 +65,7 @@ class Player:
         """
 
         self.name = name
-        if team not in [TEAM_RAND, TEAM_YELL, TEAM_BLUE]:
+        if team not in [Player.TEAM_RAND, Player.TEAM_YELL, Player.TEAM_BLUE]:
             raise ValueError(f"Invalid team {team}, expected TEAM_RAND, TEAM_YELL, or TEAM_BLUE.")
         self.team = team
         self.times_spectated = times_spectated
@@ -114,7 +114,17 @@ class Game:
         @returns A dictionary with match info.
         """
 
-        last_game = history[-1]
+        try:
+            last_game = self.history[-1]
+        except IndexError: # first game
+            last_game = {
+                "stage": -1,
+                "mode": -1,
+                "alpha": [],
+                "bravo": [],
+                "random": [],
+                "spec": []
+            }
 
         # choose a stage
         if force_stage is not None:
