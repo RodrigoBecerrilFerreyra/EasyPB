@@ -18,6 +18,7 @@ limitations under the License.
 """
 
 import random
+from time import time
 from collections import deque
 
 MODES = {
@@ -58,7 +59,7 @@ class Player:
 
     def __init__(self, name, team=TEAM_RAND, times_spectated=0):
         """Creates a new player.
-        
+
         @param name The player's username.
         @param team The player's preferred team (either TEAM_YELL or TEAM_BLUE) (default: TEAM_RAND).
         @param times_spectated Used in order to add a player in the middle of a PB session.
@@ -73,12 +74,17 @@ class Player:
     def __str__(self):
         return self.name
 
+    def incrementSpec(self, amount=1):
+        """Modifies the amount of times a player has spectated."""
+
+        self.times_spectated += amount
+
 class Game:
     """Describes the game session, and past and future matches."""
 
     def __init__(self, players):
         """Creates a new game session.
-        
+
         @param players A list of players that are in the game session.
         """
         self.players = players
@@ -100,10 +106,33 @@ class Game:
 
         return retstr
 
+    def get_stage_display_dict(self):
+        """Returns the last five matches in dictionary format."""
+
+        retdict = {}
+
+        for index, element in enumerate(self.stage_display):
+            retdict[index] = element
+
+        return retdict
+
     def add_match(self, match):
         """Add a match to the history."""
         self.history.append(match)
-        self.stage_display.append(match)
+
+        # Add 1 to the times a player spectated
+        for player in match["spec"]:
+            player.incrementSpec()
+
+        # change Player objects into strings (Player.name)
+        self.stage_display.append({
+            "stage": match["stage"],
+            "mode": match["mode"],
+            "alpha": [player.name for player in match["alpha"]],
+            "bravo": [player.name for player in match["bravo"]],
+            "random": [player.name for player in match["random"]],
+            "spec": [player.name for player in match["spec"]]
+        })
 
     def matchmake(self, force_stage=None, force_mode=None, include_turf=False):
         """Creates a new match according to a set of rules and returns it.
@@ -186,7 +215,7 @@ class Game:
         # add the amount of spectators needed
         for _ in range(num_spectators):
             spectators.append(possible_spectators.pop())
-    
+
         # assign teams
         for player in possible_spectators + last_game_spectators:
             if player.team == Player.TEAM_RAND:
