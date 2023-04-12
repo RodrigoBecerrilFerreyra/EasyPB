@@ -116,6 +116,36 @@ class Game:
 
         return retdict
 
+    def add_player(self, player_name, player_team=Player.TEAM_RAND):
+        """Adds a player from the game.
+
+        @param player_name The player's name.
+        @param player_team The player's preferred team (defaults to random).
+        @throws RuntimeError if the game is already full.
+        """
+
+        if len(self.players) >= 10:
+            raise RuntimeError("Game is already full.")
+
+        # find the lowest amount of times spectated
+        times_spectated = min([player.times_spectated for player in self.players])
+
+        self.players.append(Player(player_name, team=player_team, times_spectated=times_spectated))
+
+    def remove_player(self, player_name):
+        """Removes a player from the game based on the player's name.
+
+        @param player_name The player's name.
+        @returns True if the player was found and removed, False otherwise.
+        """
+
+        for player in self.players:
+            if player_name == player.name:
+                self.players.remove(player)
+                return True
+
+        return False
+
     def add_match(self, match):
         """Add a match to the history."""
         self.history.append(match)
