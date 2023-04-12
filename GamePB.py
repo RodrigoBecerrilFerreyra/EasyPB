@@ -164,12 +164,13 @@ class Game:
             "spec": [player.name for player in match["spec"]]
         })
 
-    def matchmake(self, force_stage=None, force_mode=None, include_turf=False):
+    def matchmake(self, force_stage=None, force_mode=None, include_turf=False, auto_add=True):
         """Creates a new match according to a set of rules and returns it.
 
         @param force_stage Supply a stage instead of choosing a random one.
         @param force_mode Supply a mode instead of choosing a random one.
         @param include_turf A boolean to add Turf War to the mode rotation.
+        @param auto_add Adds the new match to the history and queue using add_match()
         @returns A dictionary with match info.
         """
 
@@ -255,7 +256,7 @@ class Game:
             elif player.TEAM_BLUE:
                 bravo_team.append(player)
 
-        return {
+        new_match = {
             "stage": stage,
             "mode": mode,
             "alpha": alpha_team,
@@ -263,6 +264,11 @@ class Game:
             "random": random_team,
             "spec": spectators
         }
+
+        if auto_add:
+            self.add_match(new_match)
+
+        return new_match
 
 if __name__ == "__main__":
 
