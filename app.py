@@ -40,13 +40,12 @@ async def handler(connection):
 
         if command[0] == "quit" or command[0] == "exit":
             break
-
-        if command[0] not in commands:
-            await aprint(f"Command {command} not found.")
-            continue
-
-        # this calls the function relating to the command
-        await commands[command[0]](command[1:], game=game)
+        
+        try:
+            # this calls the function relating to the command
+            await commands[command[0]](command[1:], game=game)
+        except KeyError:
+            await aprint(f"Command {command[0]} not found.")
 
 async def command_add_players(args, game=None):
     for player in args:
