@@ -27,10 +27,12 @@ async def handler(connection):
         "license": command_license,
         "add_players" : command_add_players,
         "remove_players": command_remove_players,
-        "change_team": command_change_team
+        "change_team": command_change_team,
+        "matchmake": command_matchmake,
+        "next": command_next
     }
 
-    game = Game([])
+    game = Game()
 
     while True:
         command = await ainput("EZPB >> ")
@@ -102,6 +104,13 @@ async def command_change_team(args, game=None):
 
     player.team = team_name
     await aprint(f"Player {player.name} successfully changed to team {player.team}.")
+
+async def command_matchmake(args, game=None):
+    game.matchmake()
+
+async def command_next(args, game=None):
+    # avoids IndexError
+    game.current_match = min(game.current_match + 1, len(game.stage_display) - 1)
 
 async def command_help(args, game=None):
     await aprint("Commands:")

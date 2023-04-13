@@ -82,14 +82,17 @@ class Player:
 class Game:
     """Describes the game session, and past and future matches."""
 
-    def __init__(self, players):
+    def __init__(self, players=[]):
         """Creates a new game session.
 
         @param players A list of players that are in the game session.
         """
+
         self.players = players
         self.history = []
-        self.stage_display = deque(maxlen=3)
+        self.QUEUE_LENGTH = 3
+        self.stage_display = deque(maxlen=self.QUEUE_LENGTH)
+        self.current_match = 0
 
     def __str__(self):
         """Returns a crude table-like representation of the entire history of the game."""
