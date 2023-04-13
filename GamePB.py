@@ -89,7 +89,7 @@ class Game:
         """
         self.players = players
         self.history = []
-        self.stage_display = deque(maxlen=5)
+        self.stage_display = deque(maxlen=3)
 
     def __str__(self):
         """Returns a crude table-like representation of the entire history of the game."""
@@ -128,7 +128,7 @@ class Game:
             raise RuntimeError("Game is already full.")
 
         # find the lowest amount of times spectated
-        times_spectated = min([player.times_spectated for player in self.players])
+        times_spectated = min([player.times_spectated for player in self.players], default=0)
 
         self.players.append(Player(player_name, team=player_team, times_spectated=times_spectated))
 
