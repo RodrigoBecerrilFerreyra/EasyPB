@@ -146,6 +146,18 @@ class Game:
 
         return False
 
+    def find_player(self, player_name):
+        """Finds the player matching player_name and returns the player object.
+
+        @throws LookupError if the name is not found.
+        """
+
+        for player in self.players:
+            if player.name == player_name:
+                return player
+
+        raise LookupError(f"Player {player_name} not found.")
+
     def add_match(self, match):
         """Add a match to the history."""
         self.history.append(match)

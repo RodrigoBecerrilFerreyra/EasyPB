@@ -26,7 +26,8 @@ async def handler(connection):
         "help": command_help,
         "license": command_license,
         "add_players" : command_add_players,
-        "remove_players": command_remove_players
+        "remove_players": command_remove_players,
+        "change_team": command_change_team
     }
 
     game = Game([])
@@ -80,6 +81,28 @@ async def command_remove_players(args, game=None):
             await aprint(f"Player {player} successfully removed.")
         else:
             await aprint(f"Failed to remove player {player}.")
+
+async def command_change_team(args, game=None):
+
+    if len(args) != 2:
+        return # incorrect syntax
+
+    try:
+        player = game.find_player(args[0])
+    except LookupError as e:
+        await aprint(e)
+        return
+
+    team = args[1][0].upper() # the first character in the second argument
+    if team == "Y":
+        team_name = Player.TEAM_YELL
+    elif team == "B":
+        team_name = Player.TEAM_BLUE
+    else:
+        team_name = Player.TEAM_RAND
+
+    player.team = team_name
+    await aprint(f"Player {player.name} successfully changed to team {player.team}.")
 
 async def command_help(args, game=None):
     await aprint("Commands:")
