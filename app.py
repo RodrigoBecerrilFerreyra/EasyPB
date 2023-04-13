@@ -25,7 +25,11 @@ async def handler(connection):
     commands = {
         "help": command_help,
         "license": command_license,
+        "add_players" : command_add_players,
+        "remove_players": command_remove_players
     }
+
+    game = Game([])
 
     while True:
         command = await ainput("EZPB >> ")
@@ -33,23 +37,57 @@ async def handler(connection):
         if len(command) < 1:
             continue
 
+        if command[0] == "quit" or command[0] == "exit":
+            break
+
         if command[0] not in commands:
             await aprint(f"Command {command} not found.")
             continue
 
-        if command[0] == "quit" or command[0] == "exit":
-            break
-
         # this calls the function relating to the command
-        await commands[command[0]](command[1:])
+        await commands[command[0]](command[1:], game=game)
 
-async def command_help(args):
+async def command_add_players(args, game=None):
+    for player in args:
+
+        try: # this try block tries to find the team name
+            equals_sign = player.index("=")
+            team = player[equals_sign+1:].upper()
+            player_name = player[:equals_sign]
+        except ValueError:
+            team = "R"
+            player_name = player
+
+        if team == "Y":
+            team_name = Player.TEAM_YELL
+        elif team == "B":
+            team_name = Player.TEAM_BLUE
+        else:
+            team_name = Player.TEAM_RAND
+
+        try: # this try block catches RuntimeError when more than 10 players join
+            game.add_player(player_name=player_name, player_team=team_name)
+            await aprint(f"Player {player_name} successfully added on team {team_name}.")
+
+        except RuntimeError as e:
+            await aprint(f"Could not add player {player_name} as game is already full.")
+
+async def command_remove_players(args, game=None):
+    for player in args:
+
+        return_code = game.remove_player(player)
+        if return_code:
+            await aprint(f"Player {player} successfully removed.")
+        else:
+            await aprint(f"Failed to remove player {player}.")
+
+async def command_help(args, game=None):
     await aprint("Commands:")
     await aprint("help - prints this help message")
     await aprint("license - prints the licensing details")
     await aprint('"quit" or "exit" - end program')
 
-async def command_license(args):
+async def command_license(args, game=None):
     await aprint("""Copyright 2023 Rodrigo Becerril Ferreyra
 
 Licensed under the Apache License, Version 2.0 (the "License");
