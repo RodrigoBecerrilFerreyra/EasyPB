@@ -64,6 +64,7 @@ class Player:
         @param team The player's preferred team (either TEAM_YELL or TEAM_BLUE) (default: TEAM_RAND).
         @param times_spectated Used in order to add a player in the middle of a PB session.
         """
+        # TODO: deal with adding more than 10 players
 
         self.name = name
         if team not in [Player.TEAM_RAND, Player.TEAM_YELL, Player.TEAM_BLUE]:
