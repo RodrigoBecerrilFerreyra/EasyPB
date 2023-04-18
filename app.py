@@ -17,37 +17,17 @@ import websockets
 import json
 from aioconsole import ainput, aprint
 from GamePB import Player, Game
+from draw import create_image
+
+CLIENTS = set() # set of all websocket connections connected to the server
 
 async def handler(connection):
 
-    # simple and crude command line interface
-
-    commands = {
-        "help": command_help,
-        "license": command_license,
-        "add_players" : command_add_players,
-        "remove_players": command_remove_players,
-        "change_team": command_change_team,
-        "matchmake": command_matchmake,
-        "next": command_next
-    }
-
-    game = Game()
-
-    while True:
-        command = await ainput("EZPB >> ")
-        command = command.split()
-        if len(command) < 1:
-            continue
-
-        if command[0] == "quit" or command[0] == "exit":
-            break
-        
-        try:
-            # this calls the function relating to the command
-            await commands[command[0]](command[1:], game=game)
-        except KeyError:
-            await aprint(f"Command {command[0]} not found.")
+    CLIENTS.add(connection)
+    try:
+        await connection.wait_closed()
+    finally:
+        CLIENTS.remove(connection)
 
 async def command_add_players(args, game=None):
     for player in args:
@@ -135,7 +115,51 @@ limitations under the License.""")
 
 async def main():
     async with websockets.serve(handler, "", 8001):
-        await asyncio.Future()  # run forever
+
+        # simple and crude command line interface
+
+        commands = {
+            "help": command_help,
+            "license": command_license,
+            "add_players" : command_add_players,
+            "remove_players": command_remove_players,
+            "change_team": command_change_team,
+            "matchmake": command_matchmake,
+            "next": command_next
+        }
+
+        game = Game()
+
+        while True:
+            command = await ainput("EZPB >> ")
+            command = command.split()
+            if len(command) < 1:
+                continue
+
+            if command[0] == "quit" or command[0] == "exit":
+                break
+
+            if command[0] == "send_data":
+                """Creates images based on the game.stage_display queue and
+                sends them to the JavaScript.
+                """
+
+                images = [] # list of strings
+                for index, match in enumerate(game.stage_display):
+                    images.append(create_image(match, tmp=False, location=f"img{index}.png"))
+
+                websockets.broadcast(CLIENTS, json.dumps({
+                    "type": "images",
+                    "images": images
+                }))
+
+                continue
+
+            try:
+                # this calls the function relating to the command
+                await commands[command[0]](command[1:], game=game)
+            except KeyError:
+                await aprint(f"Command {command[0]} not found.")
 
 if __name__ == "__main__":
     asyncio.run(main())
