@@ -48,6 +48,10 @@ window.addEventListener("DOMContentLoaded", function()
     // Open the WebSocket connection and register event handlers.
     const websocket = new WebSocket("ws://localhost:8001/");
     receiveMessage(websocket);
+
+    // send message to server to send updated stage data
+    // "please send me the latest data" (the data is handled by receiveMessage)
+    websocket.send(JSON.stringify({type: "init"}))
 });
 
 function receiveMessage(websocket)
@@ -57,109 +61,28 @@ function receiveMessage(websocket)
         // receive and parse data
         let received = JSON.parse(data);
 
-        for(let matchnum in received)
+        if(received.type === "images")
         {
-            let div = document.createElement("div");
-            div.className = "match";
 
-            // create and populate table
-            let table = document.createElement("tbody");
-
-            // row 1: stage
-            let tr = document.createElement("tr");
-            let td = document.createElement("td");
-            td.className = "tg-0lax"; // from https://www.tablesgenerator.com
-            td.innerText = "Stage:"
-            tr.append(td);
-            // stage name
-            td = document.createElement("td");
-            td.className = "tg-0lax";
-            td.colSpan = "4";
-            td.innerText = STAGES[received[matchnum].stage];
-            tr.append(td);
-            table.append(tr);
-
-            // row 2: mode
-            tr = document.createElement("tr");
-            td = document.createElement("td");
-            td.className = "tg-0lax";
-            td.innerText = "Mode:";
-            tr.append(td);
-            // mode name
-            td = document.createElement("td");
-            td.className = "tg-0lax";
-            td.colSpan = "4";
-            td.innerText = MODES[received[matchnum].mode];
-            tr.append(td);
-            table.append(tr);
-
-            // row 3: alpha team
-            tr = document.createElement("tr");
-            td = document.createElement("td");
-            td.className = "tg-0lax";
-            td.innerText = "Alpha:";
-            tr.append(td);
-            // names of alpha team players
-            for(let i = 0; i < received[matchnum].alpha.length; ++i)
+            for(let location of received.images)
             {
-                td = document.createElement("td");
-                td.className = "tg-0lax";
-                td.innerText = received[matchnum].alpha[i];
-                tr.append(td);
-            }
-            table.append(tr);
+                // create the div and image and append it to body
+                let div = document.createElement("div");
+                div.className = "match-div";
+                let image = document.createElement("img")
+                image.className = "match-image";
+                image.src = location;
+                div.append(image);
+                document.body.append(div);
 
-            // row 4: bravo team
-            tr = document.createElement("tr");
-            td = document.createElement("td");
-            td.className = "tg-0lax";
-            td.innerText = "Bravo:";
-            tr.append(td);
-            // names of bravo team players
-            for(let i = 0; i < received[matchnum].bravo.length; ++i)
-            {
-                td = document.createElement("td");
-                td.className = "tg-0lax";
-                td.innerText = received[matchnum].bravo[i];
-                tr.append(td);
+                // check if there are more than three divs with class match-div;
+                // if so, delete the first one
+                let div_matchdiv = document.body.querySelectorAll("div.match-div");
+                if(div_matchdiv.length > 3)
+                {
+                    div_matchdiv[0].remove()
+                }
             }
-            table.append(tr);
-
-            // row 5: random team
-            tr = document.createElement("tr");
-            td = document.createElement("td");
-            td.className = "tg-0lax";
-            td.innerText = "Random:";
-            tr.append(td);
-            // names of random team players
-            for(let i = 0; i < received[matchnum].random.length; ++i)
-            {
-                td = document.createElement("td");
-                td.className = "tg-0lax";
-                td.innerText = received[matchnum].random[i];
-                tr.append(td);
-            }
-            table.append(tr);
-
-            // row 6: spectators
-            tr = document.createElement("tr");
-            td = document.createElement("td");
-            td.className = "tg-0lax";
-            td.innerText = "Spectators:";
-            tr.append(td);
-            // names of spectators
-            for(let i = 0; i < received[matchnum].spec.length; ++i)
-            {
-                td = document.createElement("td");
-                td.className = "tg-0lax";
-                td.colSpan = "2";
-                td.innerText = received[matchnum].spec[i];
-                tr.append(td);
-            }
-            table.append(tr);
-
-            div.append(table);
-            document.body.append(div);
         }
     });
 }
