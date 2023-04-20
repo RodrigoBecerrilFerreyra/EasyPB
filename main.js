@@ -51,7 +51,10 @@ window.addEventListener("DOMContentLoaded", function()
 
     // send message to server to send updated stage data
     // "please send me the latest data" (the data is handled by receiveMessage)
-    websocket.send(JSON.stringify({type: "init"}))
+    websocket.addEventListener("open", function()
+    {
+        websocket.send(JSON.stringify({type: "init"}))
+    });
 });
 
 function receiveMessage(websocket)
