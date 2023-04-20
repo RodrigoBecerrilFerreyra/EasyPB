@@ -94,6 +94,8 @@ class Game:
         self.QUEUE_LENGTH = 3
         self.stage_display = deque(maxlen=self.QUEUE_LENGTH)
         self.current_match = 0
+        # this list of images is used to delete all images at the end of a session
+        self.list_of_images = []
 
     def __str__(self):
         """Returns a crude table-like representation of the entire history of the game."""
@@ -177,7 +179,8 @@ class Game:
             "alpha": [player.name for player in match["alpha"]],
             "bravo": [player.name for player in match["bravo"]],
             "random": [player.name for player in match["random"]],
-            "spec": [player.name for player in match["spec"]]
+            "spec": [player.name for player in match["spec"]],
+            "image": "" # the filename or location of the image describing the match
         })
 
     def matchmake(self, force_stage=None, force_mode=None, include_turf=False, auto_add=True):
