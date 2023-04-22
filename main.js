@@ -80,7 +80,7 @@ function receiveMessage(websocket)
                 image.className = "match";
                 image.src = location;
                 div.append(image);
-                document.body.append(div);
+                document.body.prepend(div);
 
                 // check if there are more than three divs with class match-div;
                 // if so, delete the first one

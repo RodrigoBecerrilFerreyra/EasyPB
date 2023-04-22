@@ -107,6 +107,9 @@ async def command_change_team(args, game=None):
     await aprint(f"[EZPB ] Player {player.name} successfully changed to team {player.team}.")
 
 async def command_matchmake(args, game=None):
+    if len(game.players) < 2:
+        await aprint("[EZPB ] Cannot make match with less than two players.")
+        return
     game.matchmake()
 
 async def command_next(args, game=None):
