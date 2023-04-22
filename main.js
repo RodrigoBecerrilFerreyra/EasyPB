@@ -75,9 +75,9 @@ function receiveMessage(websocket)
             {
                 // create the div and image and append it to body
                 let div = document.createElement("div");
-                div.className = "match-div";
+                div.className = "match";
                 let image = document.createElement("img")
-                image.className = "match-image";
+                image.className = "match";
                 image.src = location;
                 div.append(image);
                 document.body.append(div);
