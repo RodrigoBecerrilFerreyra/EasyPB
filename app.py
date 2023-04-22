@@ -192,6 +192,9 @@ async def main():
                     os.remove(filename)
                     await aprint(f"[EZPB ] Image {filename} deleted.")
 
+                # send a message to clients
+                websockets.broadcast(CLIENTS, json.dumps({"type": "exit"}))
+
                 break
 
             try:

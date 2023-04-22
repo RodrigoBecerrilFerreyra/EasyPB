@@ -91,6 +91,10 @@ function receiveMessage(websocket)
                 }
             }
         }
+        else if(received.type === "exit")
+        {
+            showMessage("The PB has ended. Thank you for joining!")
+        }
     });
 }
 
