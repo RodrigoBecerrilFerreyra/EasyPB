@@ -47,6 +47,10 @@ window.addEventListener("DOMContentLoaded", function()
 {
     // Open the WebSocket connection and register event handlers.
     const websocket = new WebSocket("ws://localhost:8001/");
+    websocket.addEventListener("error", function()
+    {
+        showMessage("It looks like there isn't a PB up right now. Please try again later.")
+    });
     receiveMessage(websocket);
 
     // send message to server to send updated stage data
