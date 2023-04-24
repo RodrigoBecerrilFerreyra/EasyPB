@@ -57,7 +57,8 @@ window.addEventListener("DOMContentLoaded", function()
     // "please send me the latest data" (the data is handled by receiveMessage)
     websocket.addEventListener("open", function()
     {
-        websocket.send(JSON.stringify({type: "init"}))
+        console.log("Connected to websocket server successfully.");
+        websocket.send(JSON.stringify({type: "init"}));
     });
 });
 
