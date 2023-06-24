@@ -88,13 +88,18 @@ function receiveMessage(websocket)
                 let div_matchdiv = document.body.querySelectorAll("div.match-div");
                 if(div_matchdiv.length > 3)
                 {
-                    div_matchdiv[0].remove()
+                    div_matchdiv[0].remove();
                 }
             }
         }
         else if(received.type === "exit")
         {
             showMessage("The PB has ended. Thank you for joining!")
+        }
+        else if(received.type === "error")
+        {
+            showMessage("An error has occurred. Details can be found in the console.");
+            console.log(received.message);
         }
     });
 }

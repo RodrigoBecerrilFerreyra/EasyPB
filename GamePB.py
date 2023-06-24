@@ -96,6 +96,8 @@ class Game:
         self.current_match = 0
         # this list of images is used to delete all images at the end of a session
         self.list_of_images = []
+        self.room_key = None
+        self.control_key = None
 
     def __str__(self):
         """Returns a crude table-like representation of the entire history of the game."""
